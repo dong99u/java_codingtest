@@ -1,4 +1,4 @@
-package codetree.DP;
+package codetree.chapter6.lesson1.dp.solution2;
 
 import java.io.BufferedReader;
 import java.io.IOException;
