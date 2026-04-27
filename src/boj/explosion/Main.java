@@ -24,7 +24,7 @@ public class Main {
 			}
 		}
 
-		System.out.println(stack.isEmpty() ? "FRULA" : stack.toString());
+		System.out.println(stack.length() == 0 ? "FRULA" : stack.toString());
 	}
 
 	static void init() throws IOException {
