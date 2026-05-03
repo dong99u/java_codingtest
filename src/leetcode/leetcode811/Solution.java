@@ -3,6 +3,9 @@ package leetcode.leetcode811;
 import java.util.*;
 import java.util.stream.*;
 
+/**
+ * .을 기준으로 split 한 다음 해시맵 사용해서 더해주기.
+ */
 public class Solution {
 
 
