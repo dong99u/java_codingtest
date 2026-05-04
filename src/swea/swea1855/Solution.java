@@ -2,11 +2,14 @@ package swea.swea1855;
 
 import java.util.*;
 import java.io.*;
-import java.util.stream.*;
 
 public class Solution {
 	static int n;
 	static int[] arr;
+	static int[] parent;
+	static List<List<Integer>> children;
+	static int[] depths;
+
 	static BufferedReader br;
 
 	public static void main(String[] args) throws IOException {
@@ -16,17 +19,18 @@ public class Solution {
 		StringBuilder sb = new StringBuilder();
 		for (int tc = 1; tc <= t; tc++) {
 			init();
-			List<List<Integer>> graph = new ArrayList<>();
+			children = new ArrayList<>();
 			for (int i = 0; i <= n; i++) {
-				graph.add(new ArrayList<>());
+				children.add(new ArrayList<>());
 			}
 
 			for (int i = 2; i <= n ; i++) {
 				int u = i, v = arr[i - 2];
-				graph.get(u).add(v);
-				graph.get(v).add(u);
+				children.get(v).add(u);
+				parent[u] = v;
 			}
-			int answer = bfs(graph);
+
+			int answer = bfs(children);
 			sb.append("#").append(tc).append(" ").append(answer).append("\n");
 
 		}
@@ -34,26 +38,47 @@ public class Solution {
 		System.out.println(sb);
 	}
 
-	static int bfs(List<List<Integer>> graph) {
-		boolean[] visited = new boolean[n + 1];
-		Queue<int[]> queue = new ArrayDeque<>(1);
-		queue.add(new int[] {1, 0});
-		visited[1] = true;
+	static int getLCA(int a, int b) {
+		if (depths[a] < depths[b]) { // depths[a] > depths[b]로 치환.
+			int tmp = a; a = b; b = tmp;
+		}
 
-		int result = 0;
+		int diff = depths[a] - depths[b];
+		for (int i = 0; i < diff; i++) {
+			a = parent[a];
+		}
+
+		while (a != b) {
+			a = parent[a];
+			b = parent[b];
+		}
+
+		return a;
+	}
+
+	static int getDist(int a, int b) {
+		return depths[a] + depths[b] - 2 * depths[getLCA(a, b)];
+	}
+
+	static int bfs(List<List<Integer>> children) {
+		Queue<int[]> queue = new ArrayDeque<>();
+		queue.add(new int[] {1, 0});
+
+		List<Integer> paths = new ArrayList<>();
 		while (!queue.isEmpty()) {
 			int[] curr = queue.poll();
 			int currNode = curr[0], currDepth = curr[1];
-			if (queue.isEmpty())
-				result += currDepth;
-			else
-				result += currDepth * 2;
-			for (Integer next : graph.get(currNode)) {
-				if (!visited[next]) {
-					queue.add(new int[] {next, currDepth + 1});
-					visited[next] = true;
-				}
+			paths.add(currNode);
+
+			depths[currNode] = currDepth;
+			for (Integer nextNode : Solution.children.get(currNode)) {
+				queue.add(new int[] {nextNode, currDepth + 1});
 			}
+		}
+
+		int result = 0;
+		for (int i = 1; i < paths.size(); i++) {
+			result += getDist(paths.get(i - 1), paths.get(i));
 		}
 
 		return result;
@@ -64,6 +89,9 @@ public class Solution {
 		arr = Arrays.stream(br.readLine().split(" "))
 			.mapToInt(Integer::parseInt)
 			.toArray();
+		parent = new int[n + 1];
+		depths = new int[n + 1];
+
 	}
 
 }
