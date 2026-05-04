@@ -75,12 +75,6 @@ public class Solution {
 	static int k;
 	static boolean[] visited;
 
-	public int solution(int n, int infection, int[][] edges, int k) {
-		List<List<int[]>> graph = initGraph(n, edges);
-		boolean[] visited = new boolean[n + 1];
-		List<Integer> infectedNodes = new ArrayList<>();
-		infectedNodes.add(infection);
-
 
 	public static int solution(int n, int infection, int[][] edges, int k) {
     	Solution.n = n; Solution.k = k; Solution.infection = infection;
