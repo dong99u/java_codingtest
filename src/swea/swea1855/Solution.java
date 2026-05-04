@@ -30,7 +30,7 @@ public class Solution {
 				parent[u] = v;
 			}
 
-			int answer = bfs(children);
+			long answer = bfs(children);
 			sb.append("#").append(tc).append(" ").append(answer).append("\n");
 
 		}
@@ -60,7 +60,7 @@ public class Solution {
 		return depths[a] + depths[b] - 2 * depths[getLCA(a, b)];
 	}
 
-	static int bfs(List<List<Integer>> children) {
+	static long bfs(List<List<Integer>> children) {
 		Queue<int[]> queue = new ArrayDeque<>();
 		queue.add(new int[] {1, 0});
 
@@ -76,7 +76,7 @@ public class Solution {
 			}
 		}
 
-		int result = 0;
+		long result = 0;
 		for (int i = 1; i < paths.size(); i++) {
 			result += getDist(paths.get(i - 1), paths.get(i));
 		}
@@ -86,9 +86,15 @@ public class Solution {
 
 	static void init() throws IOException {
 		n = Integer.parseInt(br.readLine());
-		arr = Arrays.stream(br.readLine().split(" "))
-			.mapToInt(Integer::parseInt)
-			.toArray();
+		String line = br.readLine();   // 줄은 일단 소비
+		if (n > 1) {
+			// 이때만 파싱
+			arr = Arrays.stream(line.split(" "))
+				.mapToInt(Integer::parseInt)
+				.toArray();
+		} else {
+			arr = new int[0];          // 빈 배열
+		}
 		parent = new int[n + 1];
 		depths = new int[n + 1];
 
