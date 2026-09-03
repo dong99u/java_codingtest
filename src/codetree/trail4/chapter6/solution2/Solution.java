@@ -1,4 +1,4 @@
-package codetree.trail4.dp2.solution2;
+package codetree.trail4.chapter6.solution2;
 
 import java.io.BufferedReader;
 import java.io.IOException;
