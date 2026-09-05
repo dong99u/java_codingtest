@@ -1,61 +1,157 @@
 package codetree.trail4.chapter2.lesson2.solution3;
 
+import java.io.BufferedReader;
 import java.io.*;
+import java.util.StringTokenizer;
 
 public class Main {
+	static final int DIR_NUM = 8;
+
+	// 1-indexed
+	static int[] dx = {0, -1, -1, 0, 1, 1, 1, 0, -1};
+	static int[] dy = {0, 0, 1, 1, 1, 0, -1, -1, -1};
+
 	static int n;
-	static int[] selected;
+	static int[][] graph; // 숫자값 존재
+	static int[][] direction; // 방향값 존재
 
 	public static void main(String[] args) throws IOException {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		n = Integer.parseInt(br.readLine().trim());
-		selected = new int[n];
+		n = Integer.parseInt(br.readLine());
+		graph = new int[n][n]; // 0-indexed
+		direction = new int[n][n];
 
-		backtrack(0);   // 첫 완성 수열이 곧 사전순 최소
-
-		StringBuilder sb = new StringBuilder();
-		for (int i = 0; i < n; i++)
-			sb.append(selected[i]);
-		System.out.println(sb);
-	}
-
-	// 완성(사전순 최소 발견)했으면 true를 반환해 위로 전파 → 즉시 탐색 종료
-	static boolean backtrack(int depth) {
-		if (depth == n)
-			return true;          // ① 종료 조건
-
-		for (int num = 4; num <= 6; num++) {  // ② 작은 수부터 시도 = 사전순 보장
-			selected[depth] = num;
-			if (isValid(depth)) {             // ③ 방금 놓은 칸 기준으로만 검사
-				if (backtrack(depth + 1))
-					return true;
+		for (int i = 0; i < n; i++) {
+			StringTokenizer st = new StringTokenizer(br.readLine());
+			for (int j = 0; j < n; j++) {
+				graph[i][j] = Integer.parseInt(st.nextToken());
 			}
-			selected[depth] = 0;
 		}
-		return false;
+
+		for (int i = 0; i < n; i++) {
+			StringTokenizer st = new StringTokenizer(br.readLine());
+			for (int j = 0; j < n; j++) {
+				direction[i][j] = Integer.parseInt(st.nextToken());
+			}
+		}
+
+		StringTokenizer st = new StringTokenizer(br.readLine());
+		// 시작점 위치
+		// 0-indexed
+		int sx = Integer.parseInt(st.nextToken()) - 1, sy = Integer.parseInt(st.nextToken()) - 1;
+
+		int answer = backtrack(sx, sy);
+		System.out.println(answer);
 	}
 
 	/**
-	 * selected[0..lastIdx]가 유효한지 검사.
-	 * lastIdx를 오른쪽 끝으로 하는 "인접한 두 블록"만 보면 충분하다.
+	 * @param x 시작점 위치 x
+	 * @param y 시작점 위치 y
+	 * @return 최대 이동 횟수
 	 */
-	static boolean isValid(int lastIdx) {
-		int len = lastIdx + 1;                       // 현재 채워진 길이
-
-		for (int L = 1; L <= len / 2; L++) {         // 블록 길이 L
-			int start2 = lastIdx - L + 1;            // 뒤 블록 시작
-			int start1 = start2 - L;                 // 앞 블록 시작
-
-			boolean same = true;
-			for (int k = 0; k < L; k++) {
-				if (selected[start1 + k] != selected[start2 + k]) {
-					same = false;
-					break;
-				}
+	// label: 현재 좌표
+	static int backtrack(int x, int y) {
+		int sx = x, sy = y; // 맨 처음 시작 위치
+		int dir = direction[x][y];
+		int result = 0;
+		while (true) {
+			int nx = x + dx[dir], ny = y + dy[dir];
+			if (!inRange(nx, ny))
+				break;
+			if (graph[nx][ny] > graph[sx][sy]) {
+				result = Math.max(result, 1 + backtrack(nx, ny));
 			}
-			if (same)
-				return false;                  // 인접 반복 발견 → 불가능
+			x = nx;
+			y = ny;
 		}
-		return true;
+		return result;
 	}
+
+	static boolean inRange(int x, int y) {
+		return (0 <= x && x < n) && (0 <= y && y < n);
+	}
+
 }
+// 메모이제이션 적용 버전
+// package codetree.trail4.chapter2.lesson2.solution3;
+//
+// import java.io.*;
+// import java.util.*;
+//
+// public class Main {
+// 	static final int DIR_NUM = 8;
+//
+// 	// 1-indexed
+// 	static int[] dx = {0, -1, -1, 0, 1, 1, 1, 0, -1};
+// 	static int[] dy = {0, 0, 1, 1, 1, 0, -1, -1, -1};
+//
+// 	static int n;
+// 	static int[][] graph; // 숫자값 존재
+// 	static int[][] direction; // 방향값 존재
+// 	static int[][] memo; // 메모이제이션
+//
+// 	public static void main(String[] args) throws IOException {
+// 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+// 		n = Integer.parseInt(br.readLine());
+// 		graph = new int[n][n]; // 0-indexed
+// 		direction = new int[n][n];
+// 		memo = new int[n][n];
+//
+// 		for (int i = 0; i < n; i++) {
+// 			Arrays.fill(memo[i], -1);
+// 		}
+//
+// 		for (int i = 0; i < n; i++) {
+// 			StringTokenizer st = new StringTokenizer(br.readLine());
+// 			for (int j = 0; j < n; j++) {
+// 				graph[i][j] = Integer.parseInt(st.nextToken());
+// 			}
+// 		}
+//
+// 		for (int i = 0; i < n; i++) {
+// 			StringTokenizer st = new StringTokenizer(br.readLine());
+// 			for (int j = 0; j < n; j++) {
+// 				direction[i][j] = Integer.parseInt(st.nextToken());
+// 			}
+// 		}
+//
+// 		StringTokenizer st = new StringTokenizer(br.readLine());
+// 		// 시작점 위치
+// 		// 0-indexed
+// 		int sx = Integer.parseInt(st.nextToken()) - 1, sy = Integer.parseInt(st.nextToken()) - 1;
+//
+// 		int answer = backtrack(sx, sy);
+// 		System.out.println(answer);
+// 	}
+//
+// 	/**
+// 	 * @param x 시작점 위치 x
+// 	 * @param y 시작점 위치 y
+// 	 * @return 최대 이동 횟수
+// 	 */
+// 	// label: 현재 좌표
+// 	static int backtrack(int x, int y) {      // x, y = 이 노드. 절대 안 변함
+// 		if (memo[x][y] != -1)
+// 			return memo[x][y];
+// 		int dir = direction[x][y];
+// 		int result = 0;
+// 		int cx = x, cy = y;                    // 커서는 따로
+// 		while (true) {
+// 			int nx = cx + dx[dir], ny = cy + dy[dir];
+// 			if (!inRange(nx, ny))
+// 				break;
+// 			if (graph[nx][ny] > graph[x][y]) {
+// 				result = Math.max(result, 1 + backtrack(nx, ny));
+// 			}
+// 			cx = nx;
+// 			cy = ny;
+// 		}
+// 		memo[x][y] = result;
+// 		return result;
+// 	}
+//
+// 	static boolean inRange(int x, int y) {
+// 		return (0 <= x && x < n) && (0 <= y && y < n);
+// 	}
+//
+// }
